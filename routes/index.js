@@ -1,23 +1,48 @@
-const express = require("express");
-// const { celebrate, Joi } = require("celebrate");
+const express = require('express')
+const {
+  movies,
+} = require('./movies')
+const {
+  users,
+} = require('./users')
+// const { celebrate, Joi } = require('celebrate');
+const {
+  NotFoundError,
+} = require('../errors')
+const {
+  auth,
+} = require('../middlewares/auth')
 
-const { movies } = require("./movies");
-const { users } = require("./users");
+const {
+  createUser, login,
+} = require('../controllers/users')
 
-const routes = express.Router();
+const {
+  createUserValidator, loginValidator,
+} = require('../utils/validators')
 
-routes.all("*", express.json());
+const {
+  ERROR_MESSAGES,
+} = require('../utils/constants')
 
-// routes.post('/signup', );
+const routes = express.Router()
 
-// routes.post('/signin', );
+routes.all('*', express.json())
 
-routes.use("/users", users);
+routes.post('/signup', createUserValidator, createUser)
 
-routes.use("/movies", movies);
+routes.post('/signin', loginValidator, login)
 
-// routes.all('*')
+routes.all('*', auth)
+
+routes.use('/users', users)
+
+routes.use('/movies', movies)
+
+routes.all('*', (req, res, next) => {
+  next(new NotFoundError(ERROR_MESSAGES.PAGE_NOT_FOUND))
+})
 
 module.exports = {
   routes,
-};
+}

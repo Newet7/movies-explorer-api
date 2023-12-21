@@ -1,27 +1,59 @@
-const express = require("express");
-const mongoose = require("mongoose");
+require('dotenv').config()
+
+const express = require('express')
+const mongoose = require('mongoose')
+const {
+  errors,
+} = require('celebrate')
+const helmet = require('helmet')
+const cors = require('cors')
 
 // modules
-const { routes } = require("./routes");
+const {
+  limiter,
+} = require('./middlewares/limiter')
+const {
+  requestLogger, errorLogger,
+} = require('./middlewares/logger')
 
-const { PORT = 3000 } = process.env;
-const DATABASE_URL = "mongodb://127.0.0.1:27017/bitfilmsdb";
+const {
+  routes,
+} = require('./routes')
+const {
+  handleError,
+} = require('./middlewares/handleError')
 
-const app = express();
+const configDefault = require('./utils/configDefault')
+
+// params
+const {
+  PORT = configDefault.PORT, DATABASE_URL = configDefault.DATABASE_URL,
+} = process.env
+
+const app = express()
 
 mongoose
   .connect(DATABASE_URL)
   .then(() => {
-    console.log(`Connected to database on ${DATABASE_URL}`);
+    console.log(`Connected to database on ${DATABASE_URL}`)
   })
   .catch((err) => {
-    console.log("Error on database connection");
-    console.error(err);
-  });
+    console.log('Error on database connection')
+    console.error(err)
+  })
 
 // middlewares
-app.use(routes);
+app.use(limiter)
+app.use(cors())
+app.use(requestLogger)
+app.use(helmet())
+app.use(routes)
+
+// error handlers
+app.use(errorLogger)
+app.use(errors())
+app.use(handleError)
 
 app.listen(PORT, () => {
-  console.log(`App started on port ${PORT}...`);
-});
+  console.log(`App started on port ${PORT}...`)
+})
