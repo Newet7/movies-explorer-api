@@ -1,0 +1,25 @@
+{
+  "extends": "airbnb-base",
+  "env": {
+    "browser": false,
+    "commonjs": true,
+    "es2021": true
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "rules": {
+    "max-len": ["error", { "code": 120 }],
+    "linebreak-style": 0,
+    "global-require": 0,
+    "eslint linebreak-style": [0, "error", "windows"],
+    // "semi": ["error", "never"],
+    "semi": "off", // Отключить правило для точек с запятой
+    "quotes": "off", // Отключить правило для кавычек
+    "object-curly-newline": "off", // Отключить правило для ожидаемого разрыва строки перед закрывающей скобкой в объектах
+    // "object-curly-newline": ["error", "always"],
+    //"comma-dangle": ["error", "never"], //отключат проверку на отсутствие требуемой запятой в конце списка элементов объекта
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }]
+  }
+}
